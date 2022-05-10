@@ -109,9 +109,7 @@ namespace GazeClick
                     try
                     {
                         clicksCounter++;
-
-                        if (logCheckbox.IsChecked == true)
-                            Console.WriteLine(clicksCounter.ToString() + ": ----------- Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} -----------", this.gazeDot.Left, this.gazeDot.Top, DateTime.Now, timeStamp);
+                        Console.WriteLine(clicksCounter.ToString() + ": ----------- Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} -----------", this.gazeDot.Left, this.gazeDot.Top, DateTime.Now, timeStamp);
                     }
                     catch (Exception ex)
                     {

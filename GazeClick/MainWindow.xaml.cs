@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -29,28 +30,27 @@ namespace GazeClick
 
         private GazeDot gazeDot;
         private DispatcherTimer gazeTimer;
+        private MyPoint prevPoint;
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetCursorPos(out POINT lpPoint);
+        //[DllImport("user32.dll")]
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        //static extern bool GetCursorPos(out POINT lpPoint);
+
+        //[StructLayout(LayoutKind.Sequential)]
+        //public struct POINT
+        //{
+        //    public int X;
+        //    public int Y;
+
+        //    public POINT(int x, int y)
+        //    {
+        //        this.X = x;
+        //        this.Y = y;
+        //    }
+        //}
 
         [DllImport("User32.dll")]
         private static extern bool SetCursorPos(int X, int Y);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct POINT
-        {
-            public int X;
-            public int Y;
-
-            public POINT(int x, int y)
-            {
-                this.X = x;
-                this.Y = y;
-            }
-        }
-
-        private Point prevPoint;
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
@@ -60,7 +60,6 @@ namespace GazeClick
         private const int MOUSEEVENTF_RIGHTDOWN = 0x08;
         private const int MOUSEEVENTF_RIGHTUP = 0x10;
 
-        private bool emulateClicks = true;
         private int clicksCounter = 0;
         private double timeStamp = 0;
 
@@ -73,14 +72,15 @@ namespace GazeClick
             _eyeXHost.Start();
 
             Log log = new Log();
+            Console.SetOut(Log.getStreamWriter());
+
+            this.prevPoint = new MyPoint();
+            this.gazeDot = new GazeDot();
 
             gazeTimer = new DispatcherTimer();
             gazeTimer.Interval = new TimeSpan(0, 0, 0, 0, (int)stareThrSlider.Value);
             gazeTimer.Tick += gazeTimer_Tick;
-            gazeTimer.Start();
-
-            gazeDot = new GazeDot();
-            gazeDot.Show();
+            gazeTimer.Start();            
 
             var lightlyFilteredGazeDataStream = _eyeXHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
 
@@ -98,8 +98,10 @@ namespace GazeClick
                             
                         if (moveCursorCheckbox.IsChecked == true)
                             SetCursorPos((int)(e.X), (int)(e.Y));
-                    } catch (Exception)
-                    { }
+                    } catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                 };
 
             registerButton.Click += (s, e) =>
@@ -111,13 +113,11 @@ namespace GazeClick
                         if (logCheckbox.IsChecked == true)
                             Console.WriteLine(clicksCounter.ToString() + ": ----------- Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} -----------", this.gazeDot.Left, this.gazeDot.Top, DateTime.Now, timeStamp);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        int j = -1;
+                        Console.WriteLine(ex.Message);
                     }
                 };
-
-            Console.SetOut(Log.getStreamWriter());
         }
 
 
@@ -130,20 +130,25 @@ namespace GazeClick
 
         private void gazeTimer_Tick(object sender, EventArgs e)
         {
-            Point p = new Point(this.gazeDot.Left, this.gazeDot.Top);
-            if (Math.Abs(prevPoint.X - p.X) != 0 && Math.Abs(prevPoint.Y - p.Y) != 0)
+            try
             {
-                if (Math.Abs(prevPoint.X - p.X) < 400 && Math.Abs(prevPoint.Y - p.Y) < 400)
-                {
-                    if (emulateClicksCheckbox.IsChecked == true)
-                        //%mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
-                        mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
-                        System.Threading.Thread.Sleep(100);
-                        mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
-                }
-            }
+                MyPoint p = new MyPoint((int) this.gazeDot.Left, (int) this.gazeDot.Top);
+                int xDiff = Math.Abs(this.prevPoint.X - p.X);
+                int yDiff = Math.Abs(this.prevPoint.Y - p.Y);
 
-            prevPoint = p;
+                if (p.X > 0 && p.Y > 0 && xDiff != 0 && yDiff != 0 && xDiff < 400 && yDiff < 400 && emulateClicksCheckbox.IsChecked == true)
+                {
+                    //%mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
+                    mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
+                    Thread.Sleep(100);
+                    mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
+                }
+
+                this.prevPoint = p;
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
 

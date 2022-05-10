@@ -123,8 +123,8 @@ namespace GazeClick
 
         private void setDotPosition(EyeXFramework.GazePointEventArgs e)
         {
-            this.gazeDot.Left = e.X - 25;
-            this.gazeDot.Top = e.Y - 25;
+            this.gazeDot.Left = e.X;
+            this.gazeDot.Top = e.Y;
         }
 
 

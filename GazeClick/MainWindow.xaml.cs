@@ -26,10 +26,11 @@ namespace GazeClick
     /// </summary>
     public partial class MainWindow : Window
     {
-        private WpfEyeXHost _eyeXHost;
+        private readonly WpfEyeXHost _eyeXHost;
 
         private GazeDot gazeDot;
         private DispatcherTimer gazeTimer;
+        private MyPoint currentPoint;
         private MyPoint prevPoint;
 
         //[DllImport("user32.dll")]
@@ -57,8 +58,8 @@ namespace GazeClick
 
         private const int MOUSEEVENTF_LEFTDOWN = 0x02;
         private const int MOUSEEVENTF_LEFTUP = 0x04;
-        private const int MOUSEEVENTF_RIGHTDOWN = 0x08;
-        private const int MOUSEEVENTF_RIGHTUP = 0x10;
+        //private const int MOUSEEVENTF_RIGHTDOWN = 0x08;
+        //private const int MOUSEEVENTF_RIGHTUP = 0x10;
 
         private int clicksCounter = 0;
         private double timeStamp = 0;
@@ -74,15 +75,19 @@ namespace GazeClick
             Log log = new Log();
             Console.SetOut(Log.getStreamWriter());
 
-            this.prevPoint = new MyPoint();
-            this.gazeDot = new GazeDot();
+            currentPoint = new MyPoint();
+            prevPoint = new MyPoint();
 
-            gazeTimer = new DispatcherTimer();
-            gazeTimer.Interval = new TimeSpan(0, 0, 0, 0, (int)stareThrSlider.Value);
-            gazeTimer.Tick += gazeTimer_Tick;
-            gazeTimer.Start();            
+            gazeDot = new GazeDot();
 
-            var lightlyFilteredGazeDataStream = _eyeXHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
+            gazeTimer = new DispatcherTimer
+            {
+                Interval = new TimeSpan(0, 0, 0, 0, (int)stareThrSlider.Value)
+            };
+            gazeTimer.Tick += GazeTimer_Tick;
+            gazeTimer.Start();
+
+            EyeXFramework.GazePointDataStream lightlyFilteredGazeDataStream = _eyeXHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
 
             lightlyFilteredGazeDataStream.Next += (s, e) =>
                 {
@@ -93,12 +98,15 @@ namespace GazeClick
                             Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} ", e.X, e.Y, DateTime.Now, e.Timestamp);
                             timeStamp = e.Timestamp;
                         }
-                            
-                        this.setDotPosition(e);
-                            
+
+                        SetDotPosition(e);
+
                         if (moveCursorCheckbox.IsChecked == true)
-                            SetCursorPos((int)(e.X), (int)(e.Y));
-                    } catch (Exception ex)
+                        {
+                            bool result = SetCursorPos((int)e.X, (int)e.Y);
+                        }
+                    }
+                    catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                     }
@@ -109,7 +117,7 @@ namespace GazeClick
                     try
                     {
                         clicksCounter++;
-                        Console.WriteLine(clicksCounter.ToString() + ": ----------- Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} -----------", this.gazeDot.Left, this.gazeDot.Top, DateTime.Now, timeStamp);
+                        Console.WriteLine(clicksCounter.ToString() + ": ----------- Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} -----------", gazeDot.Left, gazeDot.Top, DateTime.Now, timeStamp);
                     }
                     catch (Exception ex)
                     {
@@ -119,31 +127,34 @@ namespace GazeClick
         }
 
 
-        private void setDotPosition(EyeXFramework.GazePointEventArgs e)
+        private void SetDotPosition(EyeXFramework.GazePointEventArgs e)
         {
-            this.gazeDot.Left = e.X;
-            this.gazeDot.Top = e.Y;
+            gazeDot.Left = e.X - gazeDot.Width / 2.0;
+            gazeDot.Top = e.Y - gazeDot.Height / 2.0;
         }
 
 
-        private void gazeTimer_Tick(object sender, EventArgs e)
+        private void GazeTimer_Tick(object sender, EventArgs e)
         {
             try
             {
-                MyPoint p = new MyPoint((int) this.gazeDot.Left, (int) this.gazeDot.Top);
-                int xDiff = Math.Abs(this.prevPoint.X - p.X);
-                int yDiff = Math.Abs(this.prevPoint.Y - p.Y);
+                currentPoint.X = (int)gazeDot.Left;
+                currentPoint.Y = (int)gazeDot.Top;
+                int xDiff = Math.Abs(prevPoint.X - currentPoint.X);
+                int yDiff = Math.Abs(prevPoint.Y - currentPoint.Y);
 
-                if (p.X > 0 && p.Y > 0 && xDiff != 0 && yDiff != 0 && xDiff < 400 && yDiff < 400 && emulateClicksCheckbox.IsChecked == true)
+                if (currentPoint.X > 0 && currentPoint.Y > 0 && xDiff != 0 && yDiff != 0 && xDiff < 400 && yDiff < 400 && emulateClicksCheckbox.IsChecked == true)
                 {
                     //%mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
-                    mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
+                    mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToUInt32(currentPoint.X), Convert.ToUInt32(currentPoint.Y), 0, 0);
                     Thread.Sleep(100);
-                    mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
+                    mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToUInt32(currentPoint.X), Convert.ToUInt32(currentPoint.Y), 0, 0);
                 }
 
-                this.prevPoint = p;
-            } catch (Exception ex)
+                prevPoint.X = currentPoint.X;
+                prevPoint.Y = currentPoint.Y;
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -153,32 +164,32 @@ namespace GazeClick
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Log.close();
-            this.gazeDot.Close();
-            this.gazeTimer.Stop();
+            gazeDot.Close();
+            gazeTimer.Stop();
             _eyeXHost.Dispose();
             //App.Current.Shutdown();
         }
 
 
-        private void stareThrSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void StareThrSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (this.gazeTimer != null)
-                this.gazeTimer.Interval = new TimeSpan(0, 0, 0, 0, (int)stareThrSlider.Value);
+            if (gazeTimer != null)
+                gazeTimer.Interval = new TimeSpan(0, 0, 0, 0, (int)stareThrSlider.Value);
         }
 
 
-        private void emulateClicksCheckbox_Click(object sender, RoutedEventArgs e)
+        private void EmulateClicksCheckbox_Click(object sender, RoutedEventArgs e)
         {
             stareThrSlider.IsEnabled = (bool)emulateClicksCheckbox.IsChecked;
         }
 
 
-        private void showMarkerCheckbox_Click(object sender, RoutedEventArgs e)
+        private void ShowMarkerCheckbox_Click(object sender, RoutedEventArgs e)
         {
             if (showMarkerCheckbox.IsChecked == false)
-                gazeDot.Visibility = System.Windows.Visibility.Hidden;
+                gazeDot.Visibility = Visibility.Hidden;
             else
-                gazeDot.Visibility = System.Windows.Visibility.Visible;
+                gazeDot.Visibility = Visibility.Visible;
         }
     }
 }

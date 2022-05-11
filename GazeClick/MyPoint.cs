@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GazeClick
 {
-    internal class MyPoint
+    class MyPoint
     {
         public int X { get; set; }
         public int Y { get; set; }

@@ -1,18 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using EyeXFramework.Wpf;
@@ -73,7 +61,7 @@ namespace GazeClick
             _eyeXHost.Start();
 
             Log log = new Log();
-            Console.SetOut(Log.getStreamWriter());
+            Console.SetOut(Log.GetStreamWriter());
 
             currentPoint = new MyPoint();
             prevPoint = new MyPoint();
@@ -103,7 +91,7 @@ namespace GazeClick
 
                         if (moveCursorCheckbox.IsChecked == true)
                         {
-                            bool result = SetCursorPos((int)e.X, (int)e.Y);
+                            _ = SetCursorPos((int)e.X, (int)e.Y);
                         }
                     }
                     catch (Exception ex)
@@ -143,7 +131,9 @@ namespace GazeClick
                 int xDiff = Math.Abs(prevPoint.X - currentPoint.X);
                 int yDiff = Math.Abs(prevPoint.Y - currentPoint.Y);
 
-                if (currentPoint.X > 0 && currentPoint.Y > 0 && xDiff != 0 && yDiff != 0 && xDiff < 400 && yDiff < 400 && emulateClicksCheckbox.IsChecked == true)
+                if (currentPoint.X > 0 && currentPoint.Y > 0 &&
+                    xDiff != 0 && yDiff != 0 && xDiff < 400 && yDiff < 400 &&
+                    emulateClicksCheckbox.IsChecked == true)
                 {
                     //%mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
                     mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToUInt32(currentPoint.X), Convert.ToUInt32(currentPoint.Y), 0, 0);
@@ -163,7 +153,7 @@ namespace GazeClick
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Log.close();
+            Log.Close();
             gazeDot.Close();
             gazeTimer.Stop();
             _eyeXHost.Dispose();
@@ -171,10 +161,12 @@ namespace GazeClick
         }
 
 
-        private void StareThrSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void FixationThrSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (gazeTimer != null)
+            {
                 gazeTimer.Interval = new TimeSpan(0, 0, 0, 0, (int)stareThrSlider.Value);
+            }
         }
 
 
@@ -186,10 +178,7 @@ namespace GazeClick
 
         private void ShowMarkerCheckbox_Click(object sender, RoutedEventArgs e)
         {
-            if (showMarkerCheckbox.IsChecked == false)
-                gazeDot.Visibility = Visibility.Hidden;
-            else
-                gazeDot.Visibility = Visibility.Visible;
+            gazeDot.Visibility = showMarkerCheckbox.IsChecked == false ? Visibility.Hidden : Visibility.Visible;
         }
     }
 }

@@ -9,7 +9,7 @@
         <CheckBox x:Name="emulateClicksCheckbox" Content="emulate clicks" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" IsChecked="False" Click="EmulateClicksCheckbox_Click" Height="13" Width="97" TabIndex="4"/>        
         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
             <Label Content="Click threshold:" HorizontalAlignment="Left" Height="28" Margin="10,127,0,0" VerticalAlignment="Top"/>
-            <Slider x:Name="stareThrSlider" Height="28" Margin="10,0,10,0" VerticalAlignment="Top"  Maximum="5000" Minimum="500" SmallChange="10" TickFrequency="100" Value="3000" ValueChanged="StareThrSlider_ValueChanged" IsEnabled="False" TabIndex="5" HorizontalAlignment="Center" Width="120" ToolTip="Duration of the gaze fixation that causes a click. Between 500 ms and 5 s."/>
+            <Slider x:Name="stareThrSlider" Height="28" Margin="10,0,10,0" VerticalAlignment="Top"  Maximum="5000" Minimum="500" SmallChange="10" TickFrequency="100" Value="3000" ValueChanged="FixationThrSlider_ValueChanged" IsEnabled="False" TabIndex="5" HorizontalAlignment="Center" Width="120" ToolTip="Duration of the gaze fixation that causes a click. Between 500 ms and 5 s."/>
         </StackPanel>
         <Button x:Name="registerButton" Content="Register punch-in" Height="66" Margin="1" VerticalAlignment="Bottom" TabIndex="6" ToolTip="Register a current timestamp and (x, y) coordinates on click" />       
     </Grid>

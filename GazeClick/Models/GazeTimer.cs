@@ -5,7 +5,7 @@
     using System.Diagnostics;
     using System.Windows.Threading;
 
-    class GazeTimer : DispatcherTimer, INotifyPropertyChanged
+    internal class GazeTimer : DispatcherTimer, INotifyPropertyChanged
     {
         private static GazeTimer _instance;
         private int _time;
@@ -30,19 +30,30 @@
                 }
             }
         }
+        public int MinTime
+        {
+            get; private set;
+        }
+
+        public int MaxTime
+        {
+            get; private set;
+        }
 
         public static GazeTimer GetInstance()
         {
             if (_instance == null)
             {
-                _instance = new GazeTimer(3000);
+                _instance = new GazeTimer(3000, 500, 5000);
             }
             return _instance;
         }
 
-        private GazeTimer(int time)
+        private GazeTimer(int time, int minTime, int maxTime)
         {
             Time = time;
+            MinTime = minTime;
+            MaxTime = maxTime;
             Tick += GazeTimer_Tick;
         }
 
@@ -79,12 +90,7 @@
 
         private void OnPropertyChanged(string propertyName)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }    
+    }
 }

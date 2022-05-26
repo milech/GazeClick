@@ -11,12 +11,12 @@
         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
             <Label Content="Click threshold:" HorizontalAlignment="Left" Height="28" Margin="10,127,0,0" VerticalAlignment="Top"/>
             <Slider Value="{Binding GazeTimer.Time}" 
+                    Minimum="{Binding GazeTimer.MinTime}"
+                    Maximum="{Binding GazeTimer.MaxTime}"
                     x:Name="stareThrSlider"
                     Height="28"
                     Margin="10,0,10,0"
                     VerticalAlignment="Top"
-                    Maximum="5000"
-                    Minimum="500"
                     SmallChange="10"
                     TickFrequency="100"
                     IsEnabled="True"

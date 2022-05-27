@@ -2,26 +2,58 @@
 {
     using System;
     using System.IO;
+    using System.ComponentModel;
 
-    internal class Log
+    internal class Log : INotifyPropertyChanged
     {
-        private static StreamWriter sw;
+        private static Log _instance;
+        private StreamWriter sw;
+        private bool _isOn;
 
-        public Log()
+        private Log(bool isOn)
         {
+            IsOn = isOn;
             string logDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\GazeClick logs\\";
+            string logPath = logDir + GetTimestamp(DateTime.Now) + ".txt";
+            sw = new StreamWriter(logPath);
 
             if (!Directory.Exists(logDir))
             {
                 _ = Directory.CreateDirectory(logDir);
             }
-
-            string logPath = logDir + GetTimestamp(DateTime.Now) + ".txt";
-
-            sw = new StreamWriter(logPath);
         }
 
-        public static StreamWriter GetStreamWriter()
+        public bool IsOn
+        {
+            get
+            {
+                return _isOn;
+            }
+            set
+            {
+                _isOn = value;
+                OnPropertyChanged("IsOn");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public static Log GetInstance()
+        {
+            if (_instance == null)
+            {
+                _instance = new Log(false);
+            }
+
+            return _instance;
+        }
+
+        public StreamWriter GetStreamWriter()
         {
             return sw;
         }
@@ -31,7 +63,7 @@
             return value.ToString("yyyy-MM-dd-HH-mm-ss");
         }
 
-        public static void Close()
+        public void Close()
         {
             sw.Close();
         }

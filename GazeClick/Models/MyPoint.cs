@@ -1,6 +1,6 @@
 ﻿namespace GazeClick.Models
 {
-    class MyPoint
+    internal class MyPoint
     {
         public int X { get; set; }
         public int Y { get; set; }

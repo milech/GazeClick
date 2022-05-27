@@ -10,6 +10,14 @@
         private static GazeTimer _instance;
         private int _time;
 
+        private GazeTimer(int time, int minTime, int maxTime)
+        {
+            Time = time;
+            MinTime = minTime;
+            MaxTime = maxTime;
+            Tick += GazeTimer_Tick;
+        }
+
         public int Time
         {
             get 
@@ -30,6 +38,7 @@
                 }
             }
         }
+
         public int MinTime
         {
             get; private set;
@@ -40,6 +49,13 @@
             get; private set;
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         public static GazeTimer GetInstance()
         {
             if (_instance == null)
@@ -47,14 +63,6 @@
                 _instance = new GazeTimer(3000, 500, 5000);
             }
             return _instance;
-        }
-
-        private GazeTimer(int time, int minTime, int maxTime)
-        {
-            Time = time;
-            MinTime = minTime;
-            MaxTime = maxTime;
-            Tick += GazeTimer_Tick;
         }
 
         private void GazeTimer_Tick(object sender, EventArgs e)
@@ -84,13 +92,6 @@
             {
                 Console.WriteLine(ex.Message);
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -24,15 +24,15 @@
         //private const int MOUSEEVENTF_RIGHTUP = 0x10;
 
         private int clicksCounter = 0;
-        private double timeStamp = 0;
+        private double _timeStamp = 0;
         private readonly WpfEyeXHost _eyeXHost;
         private MyPoint _currentPoint;
         private MyPoint _prevPoint;
 
         public GazeClickViewModel()
         {
-            Log log = new Log();
-            Console.SetOut(Log.GetStreamWriter());
+            Log log = Log.GetInstance();
+            Console.SetOut(log.GetStreamWriter());
 
             _eyeXHost = new WpfEyeXHost();
             _eyeXHost.Start();
@@ -50,11 +50,11 @@
             {
                 try
                 {
-                    //if (logCheckbox.IsChecked == true)
-                    //{
-                    //    Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} ", e.X, e.Y, DateTime.Now, e.Timestamp);
-                    //    timeStamp = e.Timestamp;
-                    //}
+                    if (log.IsOn)
+                    {
+                        Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} ", e.X, e.Y, DateTime.Now, e.Timestamp);
+                        _timeStamp = e.Timestamp;
+                    }
 
                     //SetDotPosition(e);
 
@@ -63,11 +63,11 @@
                     //    _ = SetCursorPos((int)e.X, (int)e.Y);
                     //}
 
-                    Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} ", e.X, e.Y, e.Timestamp);
+                    //Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} ", e.X, e.Y, e.Timestamp);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    //Console.WriteLine(ex.Message);
                 }
             };
 
@@ -90,6 +90,14 @@
             get
             {
                 return GazeTimer.GetInstance();
+            }
+        }
+
+        public Log Log  // Referenced via binding in MainWindow
+        {
+            get
+            {
+                return Log.GetInstance();
             }
         }
     }

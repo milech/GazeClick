@@ -1,8 +1,10 @@
 ﻿<Window x:Class="GazeClick.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        DataContext="{StaticResource GazeClickViewModel}"
         Title="Gaze Click v1.2" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
-        <!--Title="Gaze Click v1.2" Closing="Window_Closing" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">-->
+    
+    <!--Title="Gaze Click v1.2" Closing="Window_Closing" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">-->
     <Grid Margin="0,0,0,1" Height="250">
         <CheckBox x:Name="showMarkerCheckbox"
                   Content="show marker"

@@ -1,14 +1,15 @@
-﻿namespace GazeClick.Models
-{
-    using System;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Windows.Threading;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows.Threading;
 
+namespace GazeClick.Models
+{
     internal class GazeTimer : DispatcherTimer, INotifyPropertyChanged
     {
         private static GazeTimer _instance;
         private int _time;
+        private Log _log;
 
         private GazeTimer(int time, int minTime, int maxTime)
         {
@@ -37,6 +38,11 @@
                     Debug.Assert(false, ex.Message);
                 }
             }
+        }
+
+        public void SetLog(Log log)
+        {
+            _log = log;
         }
 
         public int MinTime
@@ -69,7 +75,7 @@
         {
             try
             {
-                Console.WriteLine("dummy - tick");
+                _log.Write("dummy - tick");
             //    currentPoint.X = (int) gazeDot.Left;
             //    currentPoint.Y = (int) gazeDot.Top;
             //    int xDiff = Math.Abs(prevPoint.X - currentPoint.X);

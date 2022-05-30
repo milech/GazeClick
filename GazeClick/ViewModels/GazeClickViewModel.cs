@@ -30,7 +30,7 @@ namespace GazeClick.ViewModels
 
         public GazeClickViewModel() // referenced via Binding in MainWindow.xaml
         {
-            App.Current.MainWindow.Closing += new CancelEventHandler(MainWindowClosing);    // TODO: refactor
+            App.Current.MainWindow.Closing += new CancelEventHandler(MainWindowClosing);    // TODO: consider refactoring using event triggers not to break the MVVM pattern
 
             Log log = Log.GetInstance();
             GazeTimer gazeTimer = GazeTimer.GetInstance();

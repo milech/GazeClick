@@ -9,12 +9,29 @@ namespace GazeClick.Models
         private static Log _instance;
         private StreamWriter _sw;
         private bool _isOn = false;
+        private static readonly object _lock = new object();
 
         private Log()
         {
             LogDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\GazeClick logs\\";
             LogPath = LogDir + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".txt";
             PunchInCounter = 0;
+        }
+
+        public static Log GetInstance()
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new Log();
+                    }
+                }
+            }
+
+            return _instance;
         }
 
         public bool IsOn
@@ -56,16 +73,6 @@ namespace GazeClick.Models
                 _ = Directory.CreateDirectory(LogDir);
                 _sw = new StreamWriter(LogPath);
             }
-        }
-
-        public static Log GetInstance()
-        {
-            if (_instance == null)
-            {
-                _instance = new Log();
-            }
-
-            return _instance;
         }
 
         public void Write(string msg)

@@ -10,6 +10,7 @@ namespace GazeClick.Models
         private static GazeTimer _instance;
         private int _time;
         private Log _log;
+        private static readonly object _lock = new object();
 
         private GazeTimer(int time, int minTime, int maxTime)
         {
@@ -17,6 +18,21 @@ namespace GazeClick.Models
             MinTime = minTime;
             MaxTime = maxTime;
             Tick += GazeTimer_Tick;
+        }
+
+        public static GazeTimer GetInstance()
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new GazeTimer(3000, 500, 5000);
+                    }
+                }
+            }
+            return _instance;
         }
 
         public int Time
@@ -60,15 +76,6 @@ namespace GazeClick.Models
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public static GazeTimer GetInstance()
-        {
-            if (_instance == null)
-            {
-                _instance = new GazeTimer(3000, 500, 5000);
-            }
-            return _instance;
         }
 
         private void GazeTimer_Tick(object sender, EventArgs e)

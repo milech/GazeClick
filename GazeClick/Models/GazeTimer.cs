@@ -8,8 +8,8 @@ namespace GazeClick.Models
     internal class GazeTimer : DispatcherTimer, INotifyPropertyChanged
     {
         private static GazeTimer _instance;
-        private int _time;
         private Log _log;
+        private int _time;
         private static readonly object _lock = new object();
 
         private GazeTimer(int time, int minTime, int maxTime)

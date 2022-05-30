@@ -10,18 +10,6 @@ namespace GazeClick.ViewModels
     internal class GazeClickViewModel
     {
         //private GazeDot gazeDot;
-
-        [DllImport("User32.dll")]
-        private static extern bool SetCursorPos(int X, int Y);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
-
-        private const int MOUSEEVENTF_LEFTDOWN = 0x02;
-        private const int MOUSEEVENTF_LEFTUP = 0x04;
-        //private const int MOUSEEVENTF_RIGHTDOWN = 0x08;
-        //private const int MOUSEEVENTF_RIGHTUP = 0x10;
-
         private int clicksCounter = 0;
         private double _timeStamp = 0;
         private readonly WpfEyeXHost _eyeXHost;
@@ -32,6 +20,7 @@ namespace GazeClick.ViewModels
         {
             App.Current.MainWindow.Closing += new CancelEventHandler(MainWindowClosing);    // TODO: consider refactoring using event triggers not to break the MVVM pattern
 
+            MouseCursor mouseCursor = MouseCursor.GetInstance();
             Log log = Log.GetInstance();
             GazeTimer gazeTimer = GazeTimer.GetInstance();
             gazeTimer.SetLog(log);
@@ -56,18 +45,16 @@ namespace GazeClick.ViewModels
                 {
                     if (log.IsOn)
                     {
-                        log.Write(string.Concat("Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} ", e.X, e.Y, DateTime.Now, e.Timestamp));
+                        log.Write(string.Format("{0:0.0}\t{1:0.0}\t{2:MM/dd/yy H:mm:ss fffffff}\t{3:0} ", e.X, e.Y, DateTime.Now, e.Timestamp));
                         _timeStamp = e.Timestamp;
                     }
 
                     //SetDotPosition(e);
 
-                    //if (moveCursorCheckbox.IsChecked == true)
-                    //{
-                    //    _ = SetCursorPos((int)e.X, (int)e.Y);
-                    //}
-
-                    //Console.WriteLine("Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} ", e.X, e.Y, e.Timestamp);
+                    if (mouseCursor.IsMoving)
+                    {
+                        mouseCursor.SetCursorPosition((int)e.X, (int)e.Y);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -94,10 +81,13 @@ namespace GazeClick.ViewModels
         }
 
         public GazeTimer GazeTimer  // Referenced via binding in MainWindow
-=> GazeTimer.GetInstance();
+            => GazeTimer.GetInstance();
 
         public Log Log  // Referenced via binding in MainWindow
-=> Log.GetInstance();
+            => Log.GetInstance();
+
+        public MouseCursor MouseCursor  // Referenced via binding in MainWindow
+            => MouseCursor.GetInstance();
 
         public void MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {

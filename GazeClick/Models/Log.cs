@@ -14,7 +14,7 @@ namespace GazeClick.Models
 
         private Log()
         {
-            LogDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\GazeClick logs\\";
+            LogDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\GazeClick logs\\";
             LogPath = LogDir + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".txt";
         }
 

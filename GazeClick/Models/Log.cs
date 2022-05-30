@@ -30,7 +30,6 @@ namespace GazeClick.Models
                     }
                 }
             }
-
             return _instance;
         }
 
@@ -68,16 +67,22 @@ namespace GazeClick.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-            if (IsOn && !Directory.Exists(LogDir))  // setting boolean variable would be faster but keep it this way in case someone deletes the folder during runtime
+            if (IsOn)
             {
-                _ = Directory.CreateDirectory(LogDir);
-                _sw = new StreamWriter(LogPath);
+                if (!Directory.Exists(LogDir))  // setting boolean variable would be faster but keep it this way in case someone deletes the folder during runtime
+                {
+                    _ = Directory.CreateDirectory(LogDir);
+                }
+                if (_sw == null)
+                {
+                    _sw = new StreamWriter(LogPath);
+                }
             }
         }
 
         public void Write(string msg)
         {
-            if (IsOn)
+            if (IsOn && _sw != null)
             {
                 _sw.WriteLine(msg);
             }

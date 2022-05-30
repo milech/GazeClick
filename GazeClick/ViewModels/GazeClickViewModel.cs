@@ -1,27 +1,31 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Windows;
+using System.ComponentModel;
+using System.Windows.Input;
 using EyeXFramework.Wpf;
 using Tobii.EyeX.Framework;
 using GazeClick.Models;
-using System.ComponentModel;
+using GazeClick.Commands;
+
 
 namespace GazeClick.ViewModels
 {
     internal class GazeClickViewModel
     {
         //private GazeDot gazeDot;
-        private int clicksCounter = 0;
         private double _timeStamp = 0;
         private readonly WpfEyeXHost _eyeXHost;
-        private MyPoint _currentPoint;
-        private MyPoint _prevPoint;
+        private readonly Log log;
+        private Point _currentPoint;
+        private Point _prevPoint;
 
         public GazeClickViewModel() // referenced via Binding in MainWindow.xaml
         {
-            App.Current.MainWindow.Closing += new CancelEventHandler(MainWindowClosing);    // TODO: consider refactoring using event triggers not to break the MVVM pattern
+            App.Current.MainWindow.Closing += new CancelEventHandler(MainWindowClosing);    // TODO: consider refactoring this line using event triggers, not to break the MVVM pattern
 
             MouseCursor mouseCursor = MouseCursor.GetInstance();
-            Log log = Log.GetInstance();
+            log = Log.GetInstance();
+            PunchInCommand = new PunchInCommand(this);
             GazeTimer gazeTimer = GazeTimer.GetInstance();
             gazeTimer.SetLog(log);
 
@@ -30,8 +34,8 @@ namespace GazeClick.ViewModels
             _eyeXHost = new WpfEyeXHost();
             _eyeXHost.Start();
 
-            _currentPoint = new MyPoint();
-            _prevPoint = new MyPoint();
+            _prevPoint = new Point();
+            _currentPoint = new Point();
 
             //gazeDot = new GazeDot();
 
@@ -43,10 +47,12 @@ namespace GazeClick.ViewModels
             {
                 try
                 {
+                    _timeStamp = e.Timestamp;
+                    _currentPoint.X = e.X;
+                    _currentPoint.Y = e.Y;
                     if (log.IsOn)
                     {
-                        log.Write(string.Format("{0:0.0}\t{1:0.0}\t{2:MM/dd/yy H:mm:ss fffffff}\t{3:0} ", e.X, e.Y, DateTime.Now, e.Timestamp));
-                        _timeStamp = e.Timestamp;
+                        log.Write(string.Format(log.StandardLogEntry, e.X, e.Y, DateTime.Now, e.Timestamp));
                     }
 
                     //SetDotPosition(e);
@@ -65,19 +71,6 @@ namespace GazeClick.ViewModels
                     }
                 }
             };
-
-            //registerButton.Click += (s, e) =>
-            //{
-            //    try
-            //    {
-            //        clicksCounter++;
-            //        Console.WriteLine(clicksCounter.ToString() + ": ----------- Gaze point at ({0:0.0}, {1:0.0}) t:{2:MM/dd/yy H:mm:ss fffffff} @{3:0} -----------", gazeDot.Left, gazeDot.Top, DateTime.Now, timeStamp);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine(ex.Message);
-            //    }
-            //};
         }
 
         public GazeTimer GazeTimer  // Referenced via binding in MainWindow
@@ -89,13 +82,26 @@ namespace GazeClick.ViewModels
         public MouseCursor MouseCursor  // Referenced via binding in MainWindow
             => MouseCursor.GetInstance();
 
+        public bool CanPunchIn
+            => log == null ? false : Log.IsOn;
+
+        public ICommand PunchInCommand  // Referenced via binding in MainWindow
+        {
+            get;
+            private set;
+        }
+
+        public void PunchInRegister()
+        {
+            log.Write(string.Format(log.StandardLogEntry, _currentPoint.X, _currentPoint.Y, DateTime.Now, _timeStamp) + "\tPUNCHED IN");
+        }
+
         public void MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Log.Close();
             //gazeDot.Close();
             GazeTimer.Stop();
             _eyeXHost.Dispose();
-            //App.Current.Shutdown();
         }
     }
 }

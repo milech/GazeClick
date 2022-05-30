@@ -10,12 +10,12 @@ namespace GazeClick.Models
         private StreamWriter _sw;
         private bool _isOn = false;
         private static readonly object _lock = new object();
+        private const string _standardLogEntry = "{0:0.0}\t{1:0.0}\t{2:MM/dd/yy H:mm:ss fffffff}\t{3:0}";
 
         private Log()
         {
             LogDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\GazeClick logs\\";
             LogPath = LogDir + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".txt";
-            PunchInCounter = 0;
         }
 
         public static Log GetInstance()
@@ -56,10 +56,7 @@ namespace GazeClick.Models
             get; private set;
         }
 
-        public int PunchInCounter
-        {
-            get; private set;
-        }
+        public string StandardLogEntry => _standardLogEntry;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -80,11 +77,11 @@ namespace GazeClick.Models
             }
         }
 
-        public void Write(string msg)
+        public void Write(string message)
         {
             if (IsOn && _sw != null)
             {
-                _sw.WriteLine(msg);
+                _sw.WriteLine(message);
             }
         }
 

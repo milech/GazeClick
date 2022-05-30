@@ -3,8 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         DataContext="{StaticResource GazeClickViewModel}"
         Title="Gaze Click v1.2" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
-    
-    <!--Title="Gaze Click v1.2" Closing="Window_Closing" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">-->
     <Grid Margin="0,0,0,1" Height="250">
         <CheckBox x:Name="showMarkerCheckbox"
                   Content="show marker"
@@ -15,7 +13,7 @@
                   Width="90"
                   TabIndex="1"/>
         <CheckBox x:Name="logCheckbox"
-                  IsChecked="{Binding Log.IsOn}"
+                  IsChecked="{Binding Log.IsOn, UpdateSourceTrigger=PropertyChanged}"
                   Content="register points"
                   HorizontalAlignment="Left"
                   Margin="10,40,0,0"
@@ -59,21 +57,12 @@
                     ToolTip="Duration of the gaze fixation that causes a click. Between 500 ms and 5 s."/>
         </StackPanel>
         <Button x:Name="registerButton"
+                Command="{Binding PunchInCommand}"
                 Content="Register punch-in"
                 Height="66"
                 Margin="1"
                 VerticalAlignment="Bottom"
                 TabIndex="6"
                 ToolTip="Register a current timestamp and (x, y) coordinates on click" />
-
-        <!--<CheckBox x:Name="showMarkerCheckbox" Content="show marker" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="ShowMarkerCheckbox_Click" Height="13" Width="90" TabIndex="1"/>
-        <CheckBox x:Name="logCheckbox" Content="register points" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Height="13" Width="126" TabIndex="2"/>
-        <CheckBox x:Name="moveCursorCheckbox" Content="control cursor" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" IsChecked="False" Height="13" Width="117" TabIndex="3" />
-        <CheckBox x:Name="emulateClicksCheckbox" Content="emulate clicks" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" IsChecked="False" Click="EmulateClicksCheckbox_Click" Height="13" Width="97" TabIndex="4"/>        
-        <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-            <Label Content="Click threshold:" HorizontalAlignment="Left" Height="28" Margin="10,127,0,0" VerticalAlignment="Top"/>
-            <Slider x:Name="stareThrSlider" Height="28" Margin="10,0,10,0" VerticalAlignment="Top"  Maximum="5000" Minimum="500" SmallChange="10" TickFrequency="100" Value="3000" ValueChanged="FixationThrSlider_ValueChanged" IsEnabled="False" TabIndex="5" HorizontalAlignment="Center" Width="120" ToolTip="Duration of the gaze fixation that causes a click. Between 500 ms and 5 s."/>
-        </StackPanel>
-        <Button x:Name="registerButton" Content="Register punch-in" Height="66" Margin="1" VerticalAlignment="Bottom" TabIndex="6" ToolTip="Register a current timestamp and (x, y) coordinates on click" />-->       
     </Grid>
 </Window>

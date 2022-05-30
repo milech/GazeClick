@@ -89,6 +89,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Commands\PunchInCommand.cs" />
     <Compile Include="Models\GazeTimer.cs" />
     <Compile Include="Models\MouseCursor.cs" />
     <Compile Include="ViewModels\GazeClickViewModel.cs" />
@@ -106,7 +107,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\MyPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -139,9 +139,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Tobii.EyeX.Client.1.8.503\build\Tobii.EyeX.Client.targets" Condition="Exists('..\packages\Tobii.EyeX.Client.1.8.503\build\Tobii.EyeX.Client.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

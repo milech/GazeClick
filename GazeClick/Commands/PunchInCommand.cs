@@ -6,7 +6,7 @@ namespace GazeClick.Commands
 {
     internal class PunchInCommand : ICommand
     {
-        private GazeClickViewModel _gazeClickViewModel;
+        private readonly GazeClickViewModel _gazeClickViewModel;
 
         public PunchInCommand(GazeClickViewModel gazeClickViewModel)
         {

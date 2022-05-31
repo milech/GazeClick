@@ -92,6 +92,7 @@
     <Compile Include="Commands\PunchInCommand.cs" />
     <Compile Include="Models\GazeTimer.cs" />
     <Compile Include="Models\MouseCursor.cs" />
+    <Compile Include="Models\MyPoint.cs" />
     <Compile Include="ViewModels\GazeClickViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

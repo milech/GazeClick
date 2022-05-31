@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 using System.ComponentModel;
 using System.Windows.Input;
 using EyeXFramework.Wpf;
@@ -15,27 +14,20 @@ namespace GazeClick.ViewModels
         //private GazeDot gazeDot;
         private double _timeStamp = 0;
         private readonly WpfEyeXHost _eyeXHost;
-        private readonly Log log;
-        private Point _currentPoint;
-        private Point _prevPoint;
+        private readonly Log _log;
+        private readonly MouseCursor _mouseCursor;
 
         public GazeClickViewModel() // referenced via Binding in MainWindow.xaml
         {
             App.Current.MainWindow.Closing += new CancelEventHandler(MainWindowClosing);    // TODO: consider refactoring this line using event triggers, not to break the MVVM pattern
 
-            MouseCursor mouseCursor = MouseCursor.GetInstance();
-            log = Log.GetInstance();
+            _mouseCursor = MouseCursor.GetInstance();
+            _log = Log.GetInstance();
             PunchInCommand = new PunchInCommand(this);
-            GazeTimer gazeTimer = GazeTimer.GetInstance();
-            gazeTimer.SetLog(log);
-
-            //Console.SetOut(log.GetStreamWriter());
+            GazeTimer gazeTimer = GazeTimer.GetInstance(_mouseCursor);
 
             _eyeXHost = new WpfEyeXHost();
             _eyeXHost.Start();
-
-            _prevPoint = new Point();
-            _currentPoint = new Point();
 
             //gazeDot = new GazeDot();
 
@@ -48,33 +40,32 @@ namespace GazeClick.ViewModels
                 try
                 {
                     _timeStamp = e.Timestamp;
-                    _currentPoint.X = e.X;
-                    _currentPoint.Y = e.Y;
-                    if (log.IsOn)
+                    if (_log.IsOn)
                     {
-                        log.Write(string.Format(log.StandardLogEntry, e.X, e.Y, DateTime.Now, e.Timestamp));
+                        _log.Write(string.Format(_log.StandardLogEntry, e.X, e.Y, DateTime.Now, e.Timestamp));
                     }
 
                     //SetDotPosition(e);
+                    _mouseCursor.CurrentPoint = new MyPoint(e.X, e.Y);
 
-                    if (mouseCursor.IsMoving)
+                    if (_mouseCursor.IsMoving)
                     {
-                        mouseCursor.SetCursorPosition((int)e.X, (int)e.Y);
+                        _mouseCursor.SetCursorPosition();   // moves mouse cursor on the screen
                     }
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine(ex.Message);
-                    if (log.IsOn)
+                    if (_log.IsOn)
                     {
-                        log.Write(ex.Message);
+                        _log.Write(ex.Message);
                     }
                 }
             };
         }
 
         public GazeTimer GazeTimer  // Referenced via binding in MainWindow
-            => GazeTimer.GetInstance();
+            => GazeTimer.GetInstance(_mouseCursor);
 
         public Log Log  // Referenced via binding in MainWindow
             => Log.GetInstance();
@@ -83,7 +74,7 @@ namespace GazeClick.ViewModels
             => MouseCursor.GetInstance();
 
         public bool CanPunchIn
-            => log == null ? false : Log.IsOn;
+            => _log == null ? false : Log.IsOn;
 
         public ICommand PunchInCommand  // Referenced via binding in MainWindow
         {
@@ -93,7 +84,7 @@ namespace GazeClick.ViewModels
 
         public void PunchInRegister()
         {
-            log.Write(string.Format(log.StandardLogEntry, _currentPoint.X, _currentPoint.Y, DateTime.Now, _timeStamp) + "\tPUNCHED IN");
+            _log.Write(string.Format(_log.StandardLogEntry, _mouseCursor.CurrentPoint.X, _mouseCursor.CurrentPoint.Y, DateTime.Now, _timeStamp) + "\tPUNCHED IN");
         }
 
         public void MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -8,19 +8,20 @@ namespace GazeClick.Models
     internal class GazeTimer : DispatcherTimer, INotifyPropertyChanged
     {
         private static GazeTimer _instance;
-        private Log _log;
         private int _time;
+        private readonly MouseCursor _mouseCursor;
         private static readonly object _lock = new object();
 
-        private GazeTimer(int time, int minTime, int maxTime)
+        private GazeTimer(int time, int minTime, int maxTime, MouseCursor mouseCursor)
         {
             Time = time;
             MinTime = minTime;
             MaxTime = maxTime;
+            _mouseCursor = mouseCursor;
             Tick += GazeTimer_Tick;
         }
 
-        public static GazeTimer GetInstance()
+        public static GazeTimer GetInstance(MouseCursor mouseCursor)
         {
             if (_instance == null)
             {
@@ -28,7 +29,7 @@ namespace GazeClick.Models
                 {
                     if (_instance == null)
                     {
-                        _instance = new GazeTimer(3000, 500, 5000);
+                        _instance = new GazeTimer(3000, 500, 5000, mouseCursor);
                     }
                 }
             }
@@ -56,11 +57,6 @@ namespace GazeClick.Models
             }
         }
 
-        public void SetLog(Log log)
-        {
-            _log = log;
-        }
-
         public int MinTime
         {
             get; private set;
@@ -82,24 +78,16 @@ namespace GazeClick.Models
         {
             try
             {
-                _log.Write("dummy - tick");
-            //    currentPoint.X = (int) gazeDot.Left;
-            //    currentPoint.Y = (int) gazeDot.Top;
-            //    int xDiff = Math.Abs(prevPoint.X - currentPoint.X);
-            //    int yDiff = Math.Abs(prevPoint.Y - currentPoint.Y);
+                if (_mouseCursor.IsClicking
+                    &&_mouseCursor.CurrentPoint.X > 0 && _mouseCursor.CurrentPoint.Y > 0
+                    && _mouseCursor.GetDeltaX() != 0 && _mouseCursor.GetDeltaY() != 0
+                    && _mouseCursor.GetDeltaX() < MouseCursor.DeltaThr
+                    && _mouseCursor.GetDeltaY() < MouseCursor.DeltaThr)
+                {
+                    _mouseCursor.EmulateClick();
+                }
 
-            //    if (currentPoint.X > 0 && currentPoint.Y > 0 &&
-            //        xDiff != 0 && yDiff != 0 && xDiff < 400 && yDiff < 400 &&
-            //        emulateClicksCheckbox.IsChecked == true)
-            //    {
-            //        //%mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, Convert.ToUInt32(p.X), Convert.ToUInt32(p.Y), 0, 0);
-            //        mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToUInt32(currentPoint.X), Convert.ToUInt32(currentPoint.Y), 0, 0);
-            //        Thread.Sleep(100);
-            //        mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToUInt32(currentPoint.X), Convert.ToUInt32(currentPoint.Y), 0, 0);
-            //    }
-
-            //    prevPoint.X = currentPoint.X;
-            //    prevPoint.Y = currentPoint.Y;
+                _mouseCursor.UpdatePreviousPoint();
             }
             catch (Exception ex)
             {

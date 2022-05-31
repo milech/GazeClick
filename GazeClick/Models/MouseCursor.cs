@@ -90,7 +90,7 @@ namespace GazeClick.Models
 
         public void SetCursorPosition()
         {
-            _ = SetCursorPos((int)CurrentPoint.X, (int)CurrentPoint.Y);
+            _ = SetCursorPos(CurrentPoint.X, CurrentPoint.Y);
         }
 
         public int GetDeltaX()

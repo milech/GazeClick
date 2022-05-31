@@ -11,7 +11,6 @@ namespace GazeClick.ViewModels
 {
     internal class GazeClickViewModel
     {
-        //private GazeDot gazeDot;
         private double _timeStamp = 0;
         private readonly WpfEyeXHost _eyeXHost;
         private readonly Log _log;
@@ -29,8 +28,6 @@ namespace GazeClick.ViewModels
             _eyeXHost = new WpfEyeXHost();
             _eyeXHost.Start();
 
-            //gazeDot = new GazeDot();
-
             gazeTimer.Start();
 
             EyeXFramework.GazePointDataStream lightlyFilteredGazeDataStream = _eyeXHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
@@ -45,7 +42,6 @@ namespace GazeClick.ViewModels
                         _log.Write(string.Format(_log.StandardLogEntry, e.X, e.Y, DateTime.Now, e.Timestamp));
                     }
 
-                    //SetDotPosition(e);
                     _mouseCursor.CurrentPoint = new MyPoint(e.X, e.Y);
 
                     if (_mouseCursor.IsMoving)
@@ -90,7 +86,6 @@ namespace GazeClick.ViewModels
         public void MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Log.Close();
-            //gazeDot.Close();
             GazeTimer.Stop();
             _eyeXHost.Dispose();
         }

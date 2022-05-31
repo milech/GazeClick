@@ -3,7 +3,8 @@
     internal class MyPoint
     {
         // not using System.Windows.Point as it is sealed
-        // and would demand creating new instance for deep copy
+        // thus cannot be inherited and creating association
+        // would demand creating new instance for deep copy
 
         public MyPoint(int x, int y)
         {

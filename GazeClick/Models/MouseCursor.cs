@@ -1,9 +1,16 @@
-﻿using System;
-using System.Windows;
+﻿// -----------------------------------------------------------
+// GazeClick - App for controlling mouse cursor and emulating
+// mouse clicks with gaze tracked using Tobii eye-trackers
+// - class representing a mouse cursor
+// (C) 2022 Michal Lech, Gdynia, Poland
+// Released under GNU General Public License v3.0 (GPL-3.0)
+// email: mlech.ksm@gmail.com
+//-----------------------------------------------------------
+
+using System;
 using System.Threading;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using GazeClick.ViewModels;
 
 namespace GazeClick.Models
 {
@@ -83,11 +90,19 @@ namespace GazeClick.Models
 
         public static int DeltaThr => _DeltaThr;
 
+        /// <summary>
+        /// Sets mouse cursor position on the screen based on given (x, y), via external User32.dll
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void SetCursorPosition(int x, int y)
         {
             _ = SetCursorPos(x, y);
         }
 
+        /// <summary>
+        /// Sets mouse cursor position on the screen according to the CurrentPoint, via external User32.dll
+        /// </summary>
         public void SetCursorPosition()
         {
             _ = SetCursorPos(CurrentPoint.X, CurrentPoint.Y);

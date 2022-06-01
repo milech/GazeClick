@@ -1,11 +1,19 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// GazeClick - App for controlling mouse cursor and emulating
+// mouse clicks with gaze tracked using Tobii eye-trackers
+// - ViewModel following the MVVM pattern
+// (C) 2022 Michal Lech, Gdynia, Poland
+// Released under GNU General Public License v3.0 (GPL-3.0)
+// email: mlech.ksm@gmail.com
+//-----------------------------------------------------------
+
+using System;
 using System.ComponentModel;
 using System.Windows.Input;
 using EyeXFramework.Wpf;
 using Tobii.EyeX.Framework;
 using GazeClick.Models;
 using GazeClick.Commands;
-
 
 namespace GazeClick.ViewModels
 {

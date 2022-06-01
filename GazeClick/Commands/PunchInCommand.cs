@@ -1,4 +1,13 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// GazeClick - App for controlling mouse cursor and emulating
+// mouse clicks with gaze tracked using Tobii eye-trackers
+// - command for Punch-in register button, binding in View
+// (C) 2022 Michal Lech, Gdynia, Poland
+// Released under GNU General Public License v3.0 (GPL-3.0)
+// email: mlech.ksm@gmail.com
+//-----------------------------------------------------------
+
+using System;
 using System.Windows.Input;
 using GazeClick.ViewModels;
 

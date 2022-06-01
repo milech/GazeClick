@@ -1,4 +1,13 @@
-﻿namespace GazeClick.Models
+﻿// -----------------------------------------------------------
+// GazeClick - App for controlling mouse cursor and emulating
+// mouse clicks with gaze tracked using Tobii eye-trackers
+// - class for (x, y) point
+// (C) 2022 Michal Lech, Gdynia, Poland
+// Released under GNU General Public License v3.0 (GPL-3.0)
+// email: mlech.ksm@gmail.com
+//-----------------------------------------------------------
+
+namespace GazeClick.Models
 {
     internal class MyPoint
     {

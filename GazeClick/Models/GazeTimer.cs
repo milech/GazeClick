@@ -1,4 +1,13 @@
-﻿using System;
+﻿// -----------------------------------------------------------
+// GazeClick - App for controlling mouse cursor and emulating
+// mouse clicks with gaze tracked using Tobii eye-trackers
+// - timer for controlling mouse clicking emulation
+// (C) 2022 Michal Lech, Gdynia, Poland
+// Released under GNU General Public License v3.0 (GPL-3.0)
+// email: mlech.ksm@gmail.com
+//-----------------------------------------------------------
+
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Threading;
@@ -78,6 +87,8 @@ namespace GazeClick.Models
         {
             try
             {
+                // emulate mouse click if cursor stays in the same place (defined by DeltaThr)
+                // for longer than this.Time
                 if (_mouseCursor.IsClicking
                     &&_mouseCursor.CurrentPoint.X > 0 && _mouseCursor.CurrentPoint.Y > 0
                     && _mouseCursor.GetDeltaX() != 0 && _mouseCursor.GetDeltaY() != 0

@@ -60,11 +60,11 @@ namespace GazeClick.ViewModels
                         point = new MyPoint(e.X, e.Y);
                     }
 
-                    _timeStamp = e.Timestamp;
                     if (_log.IsOn)
                     {
                         _log.Write(string.Concat(string.Format(_log.StandardLogEntry, point.X, point.Y, DateTime.Now, e.Timestamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY()));
                     }
+                    _timeStamp = e.Timestamp;
 
                     _mouseCursor.CurrentPoint = point;
 
@@ -104,7 +104,7 @@ namespace GazeClick.ViewModels
 
         public void PunchInRegister()
         {
-            _log.Write(string.Concat(string.Format(_log.StandardLogEntry, _mouseCursor.CurrentPoint.X, _mouseCursor.CurrentPoint.Y, DateTime.Now, -1), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY(), "\tPUNCHED IN"));
+            _log.Write(string.Concat(string.Format(_log.StandardLogEntry, _mouseCursor.CurrentPoint.X, _mouseCursor.CurrentPoint.Y, DateTime.Now, _timeStamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY(), "\tPUNCHED IN"));
         }
 
         public void MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)

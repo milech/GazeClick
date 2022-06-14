@@ -21,7 +21,7 @@ namespace GazeClick.ViewModels
 {
     internal class GazeClickViewModel
     {
-        private double _timeStamp = 0;
+        private double _currentTimeStamp = 0;
         private readonly WpfEyeXHost _eyeXHost;
         private readonly Log _log;
         private readonly MouseCursor _mouseCursor;
@@ -34,7 +34,7 @@ namespace GazeClick.ViewModels
             _mouseCursor = MouseCursor.GetInstance();
             _log = Log.GetInstance();
             PunchInCommand = new PunchInCommand(this);
-            GazeTimer gazeTimer = GazeTimer.GetInstance(_mouseCursor, _log);
+            GazeTimer gazeTimer = GazeTimer.GetInstance(this, _mouseCursor, _log);
 
             _kalmanFilter = new MyKalmanFilter();
 
@@ -64,7 +64,7 @@ namespace GazeClick.ViewModels
                     {
                         _log.Write(string.Concat(string.Format(_log.StandardLogEntry, point.X, point.Y, DateTime.Now, e.Timestamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY()));
                     }
-                    _timeStamp = e.Timestamp;
+                    _currentTimeStamp = e.Timestamp;
 
                     _mouseCursor.CurrentPoint = point;
 
@@ -85,7 +85,7 @@ namespace GazeClick.ViewModels
         }
 
         public GazeTimer GazeTimer  // Referenced via binding in MainWindow
-            => GazeTimer.GetInstance(_mouseCursor, _log);
+            => GazeTimer.GetInstance(this, _mouseCursor, _log);
 
         public Log Log  // Referenced via binding in MainWindow
             => Log.GetInstance();
@@ -96,6 +96,9 @@ namespace GazeClick.ViewModels
         public bool CanPunchIn
             => _log == null ? false : Log.IsOn;
 
+        public double CurrentTimeStamp
+            => _currentTimeStamp;
+
         public ICommand PunchInCommand  // Referenced via binding in MainWindow
         {
             get;
@@ -104,7 +107,7 @@ namespace GazeClick.ViewModels
 
         public void PunchInRegister()
         {
-            _log.Write(string.Concat(string.Format(_log.StandardLogEntry, _mouseCursor.CurrentPoint.X, _mouseCursor.CurrentPoint.Y, DateTime.Now, _timeStamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY(), "\tPUNCHED IN"));
+            _log.Write(string.Concat(string.Format(_log.StandardLogEntry, _mouseCursor.CurrentPoint.X, _mouseCursor.CurrentPoint.Y, DateTime.Now, _currentTimeStamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY(), "\tPUNCHED IN"));
         }
 
         public void MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)

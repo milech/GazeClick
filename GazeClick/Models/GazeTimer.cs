@@ -11,6 +11,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Threading;
+using GazeClick.ViewModels;
 
 namespace GazeClick.Models
 {
@@ -19,20 +20,22 @@ namespace GazeClick.Models
         private static GazeTimer _instance;
         private int _time;
         private readonly MouseCursor _mouseCursor;
+        private readonly GazeClickViewModel _viewModel;
         private readonly Log _log;
         private static readonly object _lock = new object();
 
-        private GazeTimer(int time, int minTime, int maxTime, MouseCursor mouseCursor, Log log)
+        private GazeTimer(int time, int minTime, int maxTime, GazeClickViewModel viewModel, MouseCursor mouseCursor, Log log)
         {
             Time = time;
             MinTime = minTime;
             MaxTime = maxTime;
+            _viewModel = viewModel;
             _mouseCursor = mouseCursor;
             _log = log;
             Tick += GazeTimer_Tick;
         }
 
-        public static GazeTimer GetInstance(MouseCursor mouseCursor, Log log)
+        public static GazeTimer GetInstance(GazeClickViewModel viewModel, MouseCursor mouseCursor, Log log)
         {
             if (_instance == null)
             {
@@ -40,7 +43,7 @@ namespace GazeClick.Models
                 {
                     if (_instance == null)
                     {
-                        _instance = new GazeTimer(3000, 500, 5000, mouseCursor, log);
+                        _instance = new GazeTimer(3000, 500, 5000, viewModel, mouseCursor, log);
                     }
                 }
             }
@@ -103,7 +106,7 @@ namespace GazeClick.Models
                         _mouseCursor.CurrentPoint.X,
                         _mouseCursor.CurrentPoint.Y,
                         DateTime.Now,
-                        -1), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY(), "\tCLICKED"));
+                        _viewModel.CurrentTimeStamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY(), "\tCLICKED"));
                 }
 
                 _mouseCursor.UpdatePreviousPoint();

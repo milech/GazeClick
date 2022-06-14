@@ -17,9 +17,10 @@ namespace GazeClick.Models
     internal class MouseCursor : INotifyPropertyChanged
     {
         private static MouseCursor _instance;
-        private const int _DeltaThr = 400;
+        private const int _DeltaThr = 200;
         private bool _isMoving = false;
         private bool _isClicking = false;
+        private bool _isSmoothening = true;
         private static readonly object _lock = new object();
 
         [DllImport("User32.dll")]
@@ -35,6 +36,8 @@ namespace GazeClick.Models
 
         private MouseCursor()
         {
+            CurrentPoint = new MyPoint(0, 0);
+            PreviousPoint = new MyPoint(0, 0);
         }
 
         public static MouseCursor GetInstance()
@@ -85,6 +88,19 @@ namespace GazeClick.Models
             {
                 _isClicking = value;
                 OnPropertyChanged("IsClicking");
+            }
+        }
+
+        public bool IsSmoothening
+        {
+            get
+            {
+                return _isSmoothening;
+            }
+            set
+            {
+                _isSmoothening = value;
+                OnPropertyChanged("IsSmoothening");
             }
         }
 

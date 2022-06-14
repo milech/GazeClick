@@ -19,18 +19,20 @@ namespace GazeClick.Models
         private static GazeTimer _instance;
         private int _time;
         private readonly MouseCursor _mouseCursor;
+        private readonly Log _log;
         private static readonly object _lock = new object();
 
-        private GazeTimer(int time, int minTime, int maxTime, MouseCursor mouseCursor)
+        private GazeTimer(int time, int minTime, int maxTime, MouseCursor mouseCursor, Log log)
         {
             Time = time;
             MinTime = minTime;
             MaxTime = maxTime;
             _mouseCursor = mouseCursor;
+            _log = log;
             Tick += GazeTimer_Tick;
         }
 
-        public static GazeTimer GetInstance(MouseCursor mouseCursor)
+        public static GazeTimer GetInstance(MouseCursor mouseCursor, Log log)
         {
             if (_instance == null)
             {
@@ -38,7 +40,7 @@ namespace GazeClick.Models
                 {
                     if (_instance == null)
                     {
-                        _instance = new GazeTimer(3000, 500, 5000, mouseCursor);
+                        _instance = new GazeTimer(3000, 500, 5000, mouseCursor, log);
                     }
                 }
             }
@@ -89,13 +91,19 @@ namespace GazeClick.Models
             {
                 // emulate mouse click if cursor stays in the same place (defined by DeltaThr)
                 // for longer than this.Time
-                if (_mouseCursor.IsClicking
+                if (_mouseCursor.IsClicking && _mouseCursor.IsMoving
                     &&_mouseCursor.CurrentPoint.X > 0 && _mouseCursor.CurrentPoint.Y > 0
                     && _mouseCursor.GetDeltaX() != 0 && _mouseCursor.GetDeltaY() != 0
                     && _mouseCursor.GetDeltaX() < MouseCursor.DeltaThr
                     && _mouseCursor.GetDeltaY() < MouseCursor.DeltaThr)
                 {
                     _mouseCursor.EmulateClick();
+                    _log.Write(string.Concat(string.Format(
+                        _log.StandardLogEntry,
+                        _mouseCursor.CurrentPoint.X,
+                        _mouseCursor.CurrentPoint.Y,
+                        DateTime.Now,
+                        -1), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY(), "\tCLICKED"));
                 }
 
                 _mouseCursor.UpdatePreviousPoint();

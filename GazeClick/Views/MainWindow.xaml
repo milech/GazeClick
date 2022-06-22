@@ -10,7 +10,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,0,1" Height="224" Grid.ColumnSpan="2">
             <CheckBox x:Name="logCheckbox"
-                  IsChecked="{Binding Log.IsOn, UpdateSourceTrigger=PropertyChanged}"
+                  IsChecked="{Binding MyConfigWrapper.IsRegistering, UpdateSourceTrigger=PropertyChanged}"
                   Content="register points"
                   HorizontalAlignment="Left"
                   Margin="10,10,0,0"
@@ -18,7 +18,7 @@
                   Height="13"
                   TabIndex="2"/>
             <CheckBox x:Name="moveCursorCheckbox"
-                  IsChecked="{Binding MouseCursor.IsMoving}"
+                  IsChecked="{Binding MyConfigWrapper.IsCursorMoving}"
                   Content="control cursor"
                   HorizontalAlignment="Left"
                   Margin="10,10,0,0"
@@ -26,7 +26,7 @@
                   Height="13"
                   TabIndex="3" />
             <CheckBox x:Name="emulateClicksCheckbox"
-                  IsChecked="{Binding MouseCursor.IsClicking}"
+                  IsChecked="{Binding MyConfigWrapper.IsCursorClicking}"
                   Content="emulate clicks"
                   HorizontalAlignment="Left"
                   Margin="10,10,0,0"
@@ -34,7 +34,7 @@
                   Height="13"
                   TabIndex="4"/>
             <CheckBox x:Name="smoothenCheckbox"
-                  IsChecked="{Binding MouseCursor.IsSmoothening}"
+                  IsChecked="{Binding MyConfigWrapper.IsCursorSmoothening}"
                   Content="smoothen position"
                   HorizontalAlignment="Left"
                   Margin="10,10,0,0"
@@ -42,9 +42,9 @@
                   Height="13"
                   TabIndex="4"/>
             <Label Content="Click threshold:" HorizontalAlignment="Left" Height="28" Margin="10,10,0,0" VerticalAlignment="Top"/>
-            <Slider Value="{Binding GazeTimer.Time}" 
-                    Minimum="{Binding GazeTimer.MinTime}"
-                    Maximum="{Binding GazeTimer.MaxTime}"
+            <Slider Value="{Binding GazeTimer.ClickTime}" 
+                    Minimum="{Binding MyConfigWrapper.MinClickTime}"
+                    Maximum="{Binding MyConfigWrapper.MaxClickTime}"
                     x:Name="stareThrSlider"
                     Height="28"
                     Margin="10,0,10,0"

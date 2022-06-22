@@ -27,15 +27,9 @@ namespace GazeClick.Models
             Y = (int)y;
         }
 
-        public int X
-        {
-            get; set;
-        }
+        public int X  { get; set; }
 
-        public int Y
-        {
-            get; set;
-        }
+        public int Y  { get; set; }
 
         public MyPoint Clone()
         {

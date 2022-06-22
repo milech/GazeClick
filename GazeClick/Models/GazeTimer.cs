@@ -19,23 +19,25 @@ namespace GazeClick.Models
     {
         private static GazeTimer _instance;
         private int _time;
-        private readonly MouseCursor _mouseCursor;
         private readonly GazeClickViewModel _viewModel;
+        private readonly MouseCursor _mouseCursor;
         private readonly Log _log;
+        private readonly MyConfig _config;
         private static readonly object _lock = new object();
 
-        private GazeTimer(int time, int minTime, int maxTime, GazeClickViewModel viewModel, MouseCursor mouseCursor, Log log)
+        private GazeTimer(GazeClickViewModel viewModel, MouseCursor mouseCursor, Log log, MyConfig config)
         {
-            Time = time;
-            MinTime = minTime;
-            MaxTime = maxTime;
+            //MinTime = config.MinClickTime;
+            //MaxTime = config.MaxClickTime;
             _viewModel = viewModel;
             _mouseCursor = mouseCursor;
             _log = log;
+            _config = config;
+            ClickTime = config.ClickTime;
             Tick += GazeTimer_Tick;
         }
 
-        public static GazeTimer GetInstance(GazeClickViewModel viewModel, MouseCursor mouseCursor, Log log)
+        public static GazeTimer GetInstance(GazeClickViewModel viewModel, MouseCursor mouseCursor, Log log, MyConfig config)
         {
             if (_instance == null)
             {
@@ -43,16 +45,16 @@ namespace GazeClick.Models
                 {
                     if (_instance == null)
                     {
-                        _instance = new GazeTimer(3000, 500, 5000, viewModel, mouseCursor, log);
+                        _instance = new GazeTimer(viewModel, mouseCursor, log, config);
                     }
                 }
             }
             return _instance;
         }
 
-        public int Time
+        public int ClickTime
         {
-            get 
+            get
             {
                 return _time;
             }
@@ -62,7 +64,8 @@ namespace GazeClick.Models
                 {
                     _time = value;
                     Interval = new TimeSpan(0, 0, 0, 0, _time);
-                    OnPropertyChanged("Time");
+                    _config.ClickTime = _time;
+                    OnPropertyChanged("ClickTime");
                 }
                 catch (Exception ex)
                 {
@@ -71,15 +74,9 @@ namespace GazeClick.Models
             }
         }
 
-        public int MinTime
-        {
-            get; private set;
-        }
+        //public int MinTime { get; private set; }
 
-        public int MaxTime
-        {
-            get; private set;
-        }
+        //public int MaxTime { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -94,11 +91,11 @@ namespace GazeClick.Models
             {
                 // emulate mouse click if cursor stays in the same place (defined by DeltaThr)
                 // for longer than this.Time
-                if (_mouseCursor.IsClicking && _mouseCursor.IsMoving
+                if (_config.IsCursorClicking && _config.IsCursorMoving
                     &&_mouseCursor.CurrentPoint.X > 0 && _mouseCursor.CurrentPoint.Y > 0
                     && _mouseCursor.GetDeltaX() != 0 && _mouseCursor.GetDeltaY() != 0
-                    && _mouseCursor.GetDeltaX() < MouseCursor.DeltaThr
-                    && _mouseCursor.GetDeltaY() < MouseCursor.DeltaThr)
+                    && _mouseCursor.GetDeltaX() < _config.DeltaThr
+                    && _mouseCursor.GetDeltaY() < _config.DeltaThr)
                 {
                     _mouseCursor.EmulateClick();
                     _log.Write(string.Concat(string.Format(

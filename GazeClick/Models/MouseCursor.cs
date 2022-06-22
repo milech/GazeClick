@@ -9,18 +9,13 @@
 
 using System;
 using System.Threading;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace GazeClick.Models
 {
-    internal class MouseCursor : INotifyPropertyChanged
+    internal class MouseCursor
     {
         private static MouseCursor _instance;
-        private const int _DeltaThr = 200;
-        private bool _isMoving = false;
-        private bool _isClicking = false;
-        private bool _isSmoothening = true;
         private static readonly object _lock = new object();
 
         [DllImport("User32.dll")]
@@ -55,56 +50,9 @@ namespace GazeClick.Models
             return _instance;
         }
 
-        public MyPoint CurrentPoint
-        {
-            get; set;
-        }
+        public MyPoint CurrentPoint { get; set; }
 
-        public MyPoint PreviousPoint
-        {
-            get; set;
-        }
-
-        public bool IsMoving
-        {
-            get
-            {
-                return _isMoving;
-            }
-            set
-            {
-                _isMoving = value;
-                OnPropertyChanged("IsMoving");
-            }
-        }
-
-        public bool IsClicking
-        {
-            get
-            {
-                return _isClicking;
-            }
-            set
-            {
-                _isClicking = value;
-                OnPropertyChanged("IsClicking");
-            }
-        }
-
-        public bool IsSmoothening
-        {
-            get
-            {
-                return _isSmoothening;
-            }
-            set
-            {
-                _isSmoothening = value;
-                OnPropertyChanged("IsSmoothening");
-            }
-        }
-
-        public static int DeltaThr => _DeltaThr;
+        public MyPoint PreviousPoint { get; set; }
 
         /// <summary>
         /// Sets mouse cursor position on the screen based on given (x, y), via external User32.dll
@@ -147,13 +95,6 @@ namespace GazeClick.Models
             mouse_event(MOUSEEVENTF_LEFTDOWN, Convert.ToUInt32(CurrentPoint.X), Convert.ToUInt32(CurrentPoint.Y), 0, 0);
             Thread.Sleep(100);
             mouse_event(MOUSEEVENTF_LEFTUP, Convert.ToUInt32(CurrentPoint.X), Convert.ToUInt32(CurrentPoint.Y), 0, 0);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

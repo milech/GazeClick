@@ -16,18 +16,19 @@ namespace GazeClick.Models
     internal class Log : INotifyPropertyChanged
     {
         private static Log _instance;
+        private MyConfig _config;
         private StreamWriter _sw;
-        private bool _isOn = false;
         private static readonly object _lock = new object();
         private const string _standardLogEntry = "{0:0.0}\t{1:0.0}\t{2:MM/dd/yy H:mm:ss fffffff}\t{3:0}";
 
-        private Log()
+        private Log(MyConfig config)
         {
+            _config = config;
             LogDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\GazeClick logs\\";
             LogPath = LogDir + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".txt";
         }
 
-        public static Log GetInstance()
+        public static Log GetInstance(MyConfig config)
         {
             if (_instance == null)
             {
@@ -35,45 +36,26 @@ namespace GazeClick.Models
                 {
                     if (_instance == null)
                     {
-                        _instance = new Log();
+                        _instance = new Log(config);
                     }
                 }
             }
             return _instance;
         }
 
-        public bool IsOn
-        {
-            get
-            {
-                return _isOn;
-            }
-            set
-            {
-                _isOn = value;
-                OnPropertyChanged("IsOn");
-            }
-        }
+        public string LogDir { get; private set; }
 
-        public string LogDir
-        {
-            get; private set;
-        }
-
-        public string LogPath
-        {
-            get; private set;
-        }
+        public string LogPath { get; private set; }
 
         public string StandardLogEntry => _standardLogEntry;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName) // TODO: make activated on checkbox selection
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-            if (IsOn)
+            if (_config.IsRegistering)
             {
                 if (!Directory.Exists(LogDir))  // setting boolean variable would be faster but keep it this way in case someone deletes the folder during runtime
                 {
@@ -88,7 +70,7 @@ namespace GazeClick.Models
 
         public void Write(string message)
         {
-            if (IsOn && _sw != null)
+            if (_config.IsRegistering && _sw != null)
             {
                 _sw.WriteLine(message);
             }

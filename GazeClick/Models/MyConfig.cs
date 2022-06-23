@@ -11,10 +11,10 @@ namespace GazeClick.Models
 {
     internal class MyConfig
     {
-        public bool IsRegistering { get; set; }
-        public bool IsCursorMoving { get; set; }
-        public bool IsCursorClicking { get; set; }
-        public bool IsCursorSmoothening { get; set; }
+        public bool IsRegistering { get; set; } = false;
+        public bool IsCursorMoving { get; set; } = false;
+        public bool IsCursorClicking { get; set; } = false;
+        public bool IsCursorSmoothening { get; set; } = true;
         public int MinClickTime { get; set; } = 500;
         public int ClickTime { get; set; } = 2000;
         public int MaxClickTime { get; set; } = 5000;

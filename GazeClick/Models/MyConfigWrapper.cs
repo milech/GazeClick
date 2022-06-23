@@ -1,7 +1,7 @@
 ﻿// -----------------------------------------------------------
 // GazeClick - App for controlling mouse cursor and emulating
 // mouse clicks with gaze tracked using Tobii eye-trackers
-// - config for application options
+// - wrapper for serializable/deserializable config for application options
 // (C) 2022 Michal Lech, Gdynia, Poland
 // Released under GNU General Public License v3.0 (GPL-3.0)
 // email: mlech.ksm@gmail.com
@@ -114,7 +114,6 @@ namespace GazeClick.Models
                 OnPropertyChanged("MaxClickTime");
             }
         }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
 

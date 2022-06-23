@@ -1,8 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// -----------------------------------------------------------
+// GazeClick - App for controlling mouse cursor and emulating
+// mouse clicks with gaze tracked using Tobii eye-trackers
+// - serializable/deserializable config for application options
+// (C) 2022 Michal Lech, Gdynia, Poland
+// Released under GNU General Public License v3.0 (GPL-3.0)
+// email: mlech.ksm@gmail.com
+//-----------------------------------------------------------
 
 namespace GazeClick.Models
 {

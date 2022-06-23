@@ -10,7 +10,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,0,1" Height="224" Grid.ColumnSpan="2">
             <CheckBox x:Name="logCheckbox"
-                  IsChecked="{Binding MyConfigWrapper.IsRegistering, UpdateSourceTrigger=PropertyChanged}"
+                  IsChecked="{Binding Log.IsOn, UpdateSourceTrigger=PropertyChanged}"
                   Content="register points"
                   HorizontalAlignment="Left"
                   Margin="10,10,0,0"

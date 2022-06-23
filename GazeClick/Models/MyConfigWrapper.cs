@@ -45,17 +45,17 @@ namespace GazeClick.Models
             }
         }
 
-        public bool IsRegistering
+        public bool IsRegistering   // referenced via Binding in MainWindow.xaml
         {
             get => _myConfig.IsRegistering;
             set
             {
                 _myConfig.IsRegistering = value;
-                OnPropertyChanged("IsRegistering");
+                //OnPropertyChanged("IsRegistering");
             }
         }
 
-        public bool IsCursorMoving
+        public bool IsCursorMoving  // referenced via Binding in MainWindow.xaml
         {
             get => _myConfig.IsCursorMoving;
             set
@@ -65,7 +65,7 @@ namespace GazeClick.Models
             }
         }
 
-        public bool IsCursorClicking
+        public bool IsCursorClicking    // referenced via Binding in MainWindow.xaml
         {
             get => _myConfig.IsCursorClicking;
             set
@@ -75,7 +75,7 @@ namespace GazeClick.Models
             }
         }
 
-        public bool IsCursorSmoothening
+        public bool IsCursorSmoothening     // referenced via Binding in MainWindow.xaml
         {
             get => _myConfig.IsCursorSmoothening;
             set
@@ -85,7 +85,7 @@ namespace GazeClick.Models
             }
         }
 
-        public int MinClickTime
+        public int MinClickTime     // referenced via Binding in MainWindow.xaml
         {
             get => _myConfig.MinClickTime;
             set
@@ -95,17 +95,17 @@ namespace GazeClick.Models
             }
         }
 
-        public int ClickTime
+        public int ClickTime    // referenced via Binding in MainWindow.xaml
         {
             get => _myConfig.ClickTime;
             set
             {
                 _myConfig.ClickTime = value;
-                OnPropertyChanged("ClickTime");
+                //OnPropertyChanged("ClickTime");
             }
         }
 
-        public int MaxClickTime
+        public int MaxClickTime     // referenced via Binding in MainWindow.xaml
         {
             get => _myConfig.MaxClickTime;
             set

@@ -10,6 +10,7 @@
 using System;
 using System.IO;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace GazeClick.Models
 {
@@ -17,6 +18,7 @@ namespace GazeClick.Models
     {
         private static Log _instance;
         private MyConfig _config;
+        private bool _isOn;
         private StreamWriter _sw;
         private static readonly object _lock = new object();
         private const string _standardLogEntry = "{0:0.0}\t{1:0.0}\t{2:MM/dd/yy H:mm:ss fffffff}\t{3:0}";
@@ -24,6 +26,7 @@ namespace GazeClick.Models
         private Log(MyConfig config)
         {
             _config = config;
+            _isOn = config.IsRegistering;
             LogDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\GazeClick logs\\";
             LogPath = LogDir + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss") + ".txt";
         }
@@ -43,6 +46,24 @@ namespace GazeClick.Models
             return _instance;
         }
 
+        public bool IsOn    // referenced via Binding in MainWindow.xaml
+        {
+            get => _isOn;
+            set
+            {
+                try
+                {
+                    _isOn = value;
+                    _config.IsRegistering = value;
+                    OnPropertyChanged("IsOn");
+                }
+                catch (Exception ex)
+                {
+                    Debug.Assert(false, ex.Message);
+                }
+            }
+        }
+
         public string LogDir { get; private set; }
 
         public string LogPath { get; private set; }
@@ -51,7 +72,7 @@ namespace GazeClick.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName) // TODO: make activated on checkbox selection
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 

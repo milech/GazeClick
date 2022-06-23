@@ -18,11 +18,11 @@ namespace GazeClick.Models
     internal class GazeTimer : DispatcherTimer, INotifyPropertyChanged
     {
         private static GazeTimer _instance;
-        private int _time;
         private readonly GazeClickViewModel _viewModel;
         private readonly MouseCursor _mouseCursor;
         private readonly Log _log;
         private readonly MyConfig _config;
+        private int _time;
         private static readonly object _lock = new object();
 
         private GazeTimer(GazeClickViewModel viewModel, MouseCursor mouseCursor, Log log, MyConfig config)
@@ -33,7 +33,7 @@ namespace GazeClick.Models
             _mouseCursor = mouseCursor;
             _log = log;
             _config = config;
-            ClickTime = config.ClickTime;
+            _time = config.ClickTime;
             Tick += GazeTimer_Tick;
         }
 
@@ -54,10 +54,7 @@ namespace GazeClick.Models
 
         public int ClickTime
         {
-            get
-            {
-                return _time;
-            }
+            get => _time;
             set
             {
                 try

@@ -17,6 +17,7 @@ using GazeClick.Commands;
 using MyKalmanFilterDLL;
 using System.IO;
 using System.Text.Json;
+using System.Windows;
 
 namespace GazeClick.ViewModels
 {
@@ -52,43 +53,57 @@ namespace GazeClick.ViewModels
 
             EyeXFramework.GazePointDataStream lightlyFilteredGazeDataStream = _eyeXHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
 
-            lightlyFilteredGazeDataStream.Next += (s, e) =>
+            if (_eyeXHost.ConfigurationStatus.IsValid)
             {
-                try
+                lightlyFilteredGazeDataStream.Next += (s, e) =>
                 {
-                    MyPoint point;
-                    if (_configWrapper.Config.IsCursorSmoothening)
+                    try
                     {
-                        _kalmanFilter.filter(e.X, e.Y, 0, 0);
-                        point = new MyPoint(_kalmanFilter.getX(), _kalmanFilter.getY());
-                    }
-                    else
-                    {
-                        point = new MyPoint(e.X, e.Y);
-                    }
+                        MyPoint point;
+                        if (_configWrapper.Config.IsCursorSmoothening)
+                        {
+                            _kalmanFilter.filter(e.X, e.Y, 0, 0);
+                            point = new MyPoint(_kalmanFilter.getX(), _kalmanFilter.getY());
+                        }
+                        else
+                        {
+                            point = new MyPoint(e.X, e.Y);
+                        }
 
-                    if (_configWrapper.Config.IsRegistering)
-                    {
-                        _log.Write(string.Concat(string.Format(_log.StandardLogEntry, point.X, point.Y, DateTime.Now, e.Timestamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY()));
-                    }
-                    _currentTimeStamp = e.Timestamp;
+                        if (_configWrapper.Config.IsRegistering)
+                        {
+                            _log.Write(string.Concat(string.Format(_log.StandardLogEntry, point.X, point.Y, DateTime.Now, e.Timestamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY()));
+                        }
+                        _currentTimeStamp = e.Timestamp;
 
-                    _mouseCursor.CurrentPoint = point;
+                        _mouseCursor.CurrentPoint = point;
 
-                    if (_configWrapper.Config.IsCursorMoving)
-                    {
-                        _mouseCursor.SetCursorPosition();   // moves mouse cursor on the screen
+                        if (_configWrapper.Config.IsCursorMoving)
+                        {
+                            _mouseCursor.SetCursorPosition();   // moves mouse cursor on the screen
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
-                    if (_configWrapper.Config.IsRegistering)
+                    catch (Exception ex)
                     {
-                        _log.Write(ex.Message);
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                        if (_configWrapper.Config.IsRegistering)
+                        {
+                            _log.Write(ex.Message);
+                        }
                     }
-                }
-            };
+                };
+            }
+            else
+            {
+                string messageBoxText = "Your Tobbi eye-tracker is either not connected or the connected eye-tracker is not supported.";
+                string caption = "Eye-tracker error";
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Information;
+
+                _ = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
+                PreCloseApp();
+                Application.Current.Shutdown();
+            }
         }
 
         public GazeTimer GazeTimer  // Referenced via binding in MainWindow
@@ -118,6 +133,19 @@ namespace GazeClick.ViewModels
         public void PunchInRegister()
         {
             _log.Write(string.Concat(string.Format(_log.StandardLogEntry, _mouseCursor.CurrentPoint.X, _mouseCursor.CurrentPoint.Y, DateTime.Now, _currentTimeStamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY(), "\tPUNCHED IN"));
+        }
+
+        public void MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            PreCloseApp();
+        }
+
+        private void PreCloseApp()
+        {
+            SaveConfig();
+            Log.Close();
+            GazeTimer.Stop();
+            _eyeXHost.Dispose();
         }
 
         private void LoadConfig()
@@ -157,14 +185,6 @@ namespace GazeClick.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 _log.Write(ex.Message);
             }
-        }
-
-        public void MainWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            SaveConfig();
-            Log.Close();
-            GazeTimer.Stop();
-            _eyeXHost.Dispose();
         }
     }
 }

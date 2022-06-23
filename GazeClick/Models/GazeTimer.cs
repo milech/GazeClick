@@ -33,7 +33,7 @@ namespace GazeClick.Models
             _mouseCursor = mouseCursor;
             _log = log;
             _config = config;
-            _time = config.ClickTime;
+            ClickTime = config.ClickTime;
             Tick += GazeTimer_Tick;
         }
 

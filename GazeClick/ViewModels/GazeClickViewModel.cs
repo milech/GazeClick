@@ -124,15 +124,21 @@ namespace GazeClick.ViewModels
         {
             try
             {
-                string configContent = File.ReadAllText(configFileName);
-                MyConfig config = JsonSerializer.Deserialize<GazeClick.Models.MyConfig>(configContent);
-                _configWrapper.Config = config;
+                if (File.Exists(configFileName))
+                {
+                    string configContent = File.ReadAllText(configFileName);
+                    MyConfig config = JsonSerializer.Deserialize<GazeClick.Models.MyConfig>(configContent);
+                    _configWrapper.Config = config;
+                }
+                else
+                {
+                    _configWrapper.Config = new MyConfig();
+                }
             }
             catch (Exception ex)
             {
                 _configWrapper.Config = new MyConfig();
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                _log.Write(ex.Message);
             }
         }
 

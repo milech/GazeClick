@@ -27,8 +27,6 @@ namespace GazeClick.Models
 
         private GazeTimer(GazeClickViewModel viewModel, MouseCursor mouseCursor, Log log, MyConfig config)
         {
-            //MinTime = config.MinClickTime;
-            //MaxTime = config.MaxClickTime;
             _viewModel = viewModel;
             _mouseCursor = mouseCursor;
             _log = log;
@@ -70,10 +68,6 @@ namespace GazeClick.Models
                 }
             }
         }
-
-        //public int MinTime { get; private set; }
-
-        //public int MaxTime { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

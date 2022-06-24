@@ -51,7 +51,6 @@ namespace GazeClick.Models
             set
             {
                 _myConfig.IsRegistering = value;
-                //OnPropertyChanged("IsRegistering");
             }
         }
 
@@ -101,7 +100,6 @@ namespace GazeClick.Models
             set
             {
                 _myConfig.ClickTime = value;
-                //OnPropertyChanged("ClickTime");
             }
         }
 

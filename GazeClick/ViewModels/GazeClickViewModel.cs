@@ -18,6 +18,7 @@ using MyKalmanFilterDLL;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace GazeClick.ViewModels
 {
@@ -51,59 +52,52 @@ namespace GazeClick.ViewModels
 
             gazeTimer.Start();
 
+            DispatcherTimer initilizedTimer = new DispatcherTimer();
+            initilizedTimer.Interval = new TimeSpan(0, 0, 0, 0, 5000);
+            initilizedTimer.Tick += InitializedTimer_Tick;
+            initilizedTimer.Start();
+
             EyeXFramework.GazePointDataStream lightlyFilteredGazeDataStream = _eyeXHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
 
-            if (_eyeXHost.ConfigurationStatus.IsValid)
+            lightlyFilteredGazeDataStream.Next += (s, e) =>
             {
-                lightlyFilteredGazeDataStream.Next += (s, e) =>
+                try
                 {
-                    try
+                    initilizedTimer.Stop();
+
+                    MyPoint point;
+                    if (_configWrapper.Config.IsCursorSmoothening)
                     {
-                        MyPoint point;
-                        if (_configWrapper.Config.IsCursorSmoothening)
-                        {
-                            _kalmanFilter.filter(e.X, e.Y, 0, 0);
-                            point = new MyPoint(_kalmanFilter.getX(), _kalmanFilter.getY());
-                        }
-                        else
-                        {
-                            point = new MyPoint(e.X, e.Y);
-                        }
-
-                        if (_configWrapper.Config.IsRegistering)
-                        {
-                            _log.Write(string.Concat(string.Format(_log.StandardLogEntry, point.X, point.Y, DateTime.Now, e.Timestamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY()));
-                        }
-                        _currentTimeStamp = e.Timestamp;
-
-                        _mouseCursor.CurrentPoint = point;
-
-                        if (_configWrapper.Config.IsCursorMoving)
-                        {
-                            _mouseCursor.SetCursorPosition();   // moves mouse cursor on the screen
-                        }
+                        _kalmanFilter.filter(e.X, e.Y, 0, 0);
+                        point = new MyPoint(_kalmanFilter.getX(), _kalmanFilter.getY());
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        if (_configWrapper.Config.IsRegistering)
-                        {
-                            _log.Write(ex.Message);
-                        }
+                        point = new MyPoint(e.X, e.Y);
                     }
-                };
-            }
-            else
-            {
-                string messageBoxText = "Your Tobbi eye-tracker is either not connected or the connected eye-tracker is not supported.";
-                string caption = "Eye-tracker error";
-                MessageBoxButton button = MessageBoxButton.OK;
-                MessageBoxImage icon = MessageBoxImage.Information;
 
-                _ = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
-                PreCloseApp();
-                Application.Current.Shutdown();
-            }
+                    if (_configWrapper.Config.IsRegistering)
+                    {
+                        _log.Write(string.Concat(string.Format(_log.StandardLogEntry, point.X, point.Y, DateTime.Now, e.Timestamp), "\tdeltaX = ", _mouseCursor.GetDeltaX(), "\tdeltaY = ", _mouseCursor.GetDeltaY()));
+                    }
+                    _currentTimeStamp = e.Timestamp;
+
+                    _mouseCursor.CurrentPoint = point;
+
+                    if (_configWrapper.Config.IsCursorMoving)
+                    {
+                        _mouseCursor.SetCursorPosition();   // moves mouse cursor on the screen
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    if (_configWrapper.Config.IsRegistering)
+                    {
+                        _log.Write(ex.Message);
+                    }
+                }
+            };
         }
 
         public GazeTimer GazeTimer  // Referenced via binding in MainWindow
@@ -185,6 +179,18 @@ namespace GazeClick.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 _log.Write(ex.Message);
             }
+        }
+
+        private void InitializedTimer_Tick(object sender, EventArgs e)
+        {
+            string messageBoxText = "Your Tobbi eye-tracker is either not connected or does not see your eyes or the connected eye-tracker is not supported.";
+            string caption = "Eye-tracker error";
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Information;
+
+            _ = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
+            //PreCloseApp();
+            //Application.Current.Shutdown();
         }
     }
 }

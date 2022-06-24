@@ -74,34 +74,55 @@ namespace GazeClick.Models
 
         private void OnPropertyChanged(string propertyName)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-            if (_config.IsRegistering)
+            try
             {
-                if (!Directory.Exists(LogDir))  // setting boolean variable would be faster but keep it this way in case someone deletes the folder during runtime
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+                if (_config.IsRegistering)
                 {
-                    _ = Directory.CreateDirectory(LogDir);
+                    if (!Directory.Exists(LogDir))  // setting boolean variable would be faster but keep it this way in case someone deletes the folder during runtime
+                    {
+                        _ = Directory.CreateDirectory(LogDir);
+                    }
+                    if (_sw == null)
+                    {
+                        _sw = new StreamWriter(LogPath);
+                    }
                 }
-                if (_sw == null)
-                {
-                    _sw = new StreamWriter(LogPath);
-                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
 
         public void Write(string message)
         {
-            if (_config.IsRegistering && _sw != null)
+            try
             {
-                _sw.WriteLine(message);
+                if (_config.IsRegistering && _sw != null)
+                {
+                    _sw.WriteLine(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
 
         public void Close()
         {
-            if (_sw != null)
+            try
             {
-                _sw.Close();
+                if (_sw != null)
+                {
+                    _sw.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
     }

@@ -31,6 +31,7 @@ namespace GazeClick.ViewModels
         private readonly MyKalmanFilter _kalmanFilter;
         private MyConfigWrapper _configWrapper;
         private const string configFileName = "config.json";
+        private bool _infoShowed = false;
 
         public GazeClickViewModel() // referenced via Binding in MainWindow.xaml
         {
@@ -183,14 +184,16 @@ namespace GazeClick.ViewModels
 
         private void InitializedTimer_Tick(object sender, EventArgs e)
         {
-            string messageBoxText = "Your Tobbi eye-tracker is either not connected or does not see your eyes or the connected eye-tracker is not supported.";
-            string caption = "Eye-tracker error";
-            MessageBoxButton button = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.Information;
+            if (_configWrapper.Config.ShowInfoEvery5Sec || !_infoShowed)
+            {
+                string messageBoxText = "Your Tobbi eye-tracker is either not connected or does not see your eyes or the connected eye-tracker is not supported.";
+                string caption = "Eye-tracker error";
+                MessageBoxButton button = MessageBoxButton.OK;
+                MessageBoxImage icon = MessageBoxImage.Information;
 
-            _ = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
-            //PreCloseApp();
-            //Application.Current.Shutdown();
+                _ = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
+                _infoShowed = true;
+            }
         }
     }
 }

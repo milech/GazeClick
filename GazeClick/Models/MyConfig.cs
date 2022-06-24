@@ -19,5 +19,6 @@ namespace GazeClick.Models
         public int ClickTime { get; set; } = 2000;
         public int MaxClickTime { get; set; } = 5000;
         public int DeltaThr { get; set; } = 200;
+        public bool ShowInfoEvery5Sec { get; set; } = true;
     }
 }

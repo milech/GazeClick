@@ -41,7 +41,7 @@
                   VerticalAlignment="Top"
                   Height="13"
                   TabIndex="4"/>
-            <Label Content="Click threshold:" HorizontalAlignment="Left" Height="28" Margin="10,10,0,0" VerticalAlignment="Top"/>
+            <Label Content="Click time:" HorizontalAlignment="Left" Height="28" Margin="10,10,0,0" VerticalAlignment="Top"/>
             <Slider Value="{Binding GazeTimer.ClickTime}" 
                     Minimum="{Binding MyConfigWrapper.MinClickTime}"
                     Maximum="{Binding MyConfigWrapper.MaxClickTime}"
